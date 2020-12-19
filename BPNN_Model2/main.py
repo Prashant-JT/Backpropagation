@@ -1,22 +1,21 @@
 import numpy as np
 from matplotlib import pyplot as plt
 import pandas as pd
-from keras.models import Sequential
+from colors import print_signs
+from keras.models import Sequential, load_model
 from keras.layers import Dense
 
 
-result = {
-    "0-20": 'very good',
-    "21-40": 'good',
-    "41-50": 'ok',
-    "51-75": 'bad',
-    "76-100": 'very bad'
-}
+name_model = 'keras_model.h5'
 
 
-def load_dataset():
-    df = pd.read_excel(r'dataset.xls')
-    df = df.replace(r'^\s*$', np.nan, regex=True).dropna()
+def load_dataset(name):
+    df = pd.read_excel(name)
+    return df
+
+
+def pre_processing():
+    df = load_dataset(r'dataset.xls').replace(r'^\s*$', np.nan, regex=True).dropna()
     df['ACCIDENTE'] = df['ACCIDENTE'].replace(to_replace=['No', 'Yes'], value=[0, 1])
 
     aux = df['ACCIDENTE']
@@ -26,24 +25,21 @@ def load_dataset():
 
     df = df.astype(float)
 
-    dfX_test = df.sample(frac=0.1)
+    dfX_test = df.sample(frac=0.05)
     df.drop(dfX_test.index[:], inplace=True)
+    df.reset_index(drop=True, inplace=True)  # Creo que esto no hace falta
+    dfX_test.reset_index(drop=True, inplace=True)  # Igual que esto tampoco
+    dfX_test.to_excel("test.xls", index=False)
 
-    dfX_test.reset_index(drop=True, inplace=True)
-    df.reset_index(drop=True, inplace=True)
+    x_train = df.iloc[:, 0:20].values
+    y_train = df.iloc[:, 20].values
 
-    y_test = dfX_test.iloc[:, 20].values
-    dfX_test.drop(columns=['ACCIDENTE'], inplace=True)
-    x_test = dfX_test.iloc[:, 0:20].values
-
-    features = df.iloc[:, 0:20].values
-    label = df.iloc[:, 20].values
-    return features, label, x_test, y_test
+    return x_train, y_train
 
 
-def test0():
+def compile_model():
     # Load dataset
-    X, y, x_test, y_test = load_dataset()
+    X, Y = pre_processing()
 
     # Create model
     model = Sequential()
@@ -57,40 +53,47 @@ def test0():
 
     # Compile and fit model
     model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
-    model.fit(X, y, epochs=50, validation_split=0.2, shuffle=True, batch_size=50)
+    history = model.fit(X, Y, epochs=50, validation_split=0.2, shuffle=True, batch_size=40)
 
+    model.save(name_model)
+
+    # plot metrics
+    fig, (acc, loss) = plt.subplots(1, 2)
+    fig.suptitle('Metrics')
+
+    # Accuracy
+    acc.plot(history.history['accuracy'])
+    acc.plot(history.history['val_accuracy'])
+    acc.set_title('Model accuracy')
+    acc.set_ylabel('accuracy')
+    acc.set_xlabel('epochs')
+    acc.legend(['training', 'validation'], loc='lower right')
+    acc.set_ylim([0, 1])
+
+    # Loss
+    loss.plot(history.history['loss'])
+    loss.plot(history.history['val_loss'])
+    loss.set_title('Model loss')
+    loss.set_ylabel('loss')
+    loss.set_xlabel('epochs')
+    loss.legend(['training', 'validation'], loc='upper right')
+
+
+def load_test():
+    dfX_test = load_dataset(r'test.xls')
+    y_test = dfX_test.iloc[:, 20].values
+    x_test = dfX_test.iloc[:, 0:20].values
+
+    return x_test, y_test
+
+
+def evaluate_model():
+    x_test, y_test = load_test()
+    model = load_model(name_model)
     score = model.evaluate(x_test, y_test, verbose=1)
     print("Loss - Accuracy -->: ", score)
 
-    # y_new = model.predict(x_test)
+    y_new = model.predict(x_test)
 
-    """
     for i in range(len(x_test)):
-        if np.round(y_new[i]) != y_test[i]:
-            print("Original: ", y_test[i], " ---- Predicted: ", y_new[i], " -------------------- No coincide ---------")
-        else:
-            print("Original: ", y_test[i], " ---- Predicted: ", y_new[i])
-
-    
-    # plot metrics
-    plt.plot(history.history['accuracy'])
-    plt.plot(history.history['val_accuracy'])
-    plt.title('Model accuracy')
-    plt.ylabel('accuracy')
-    plt.xlabel('epoch')
-    plt.legend(['train', 'val'], loc='upper left')
-    plt.show()
-    
-
-    plt.plot(history.history['loss'])
-    plt.plot(history.history['val_loss'])
-    plt.title('Model loss')
-    plt.ylabel('loss')
-    plt.xlabel('epoch')
-    plt.legend(['train', 'val'], loc='upper left')
-    plt.show()
-
-    # Evaluate model
-    _, accuracy = model.evaluate(X, y)
-    print('Accuracy: %.2f' % (accuracy*100))
-    """
+        print_signs(y_new[i], y_test[i])
