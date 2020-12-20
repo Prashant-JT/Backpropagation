@@ -1,5 +1,5 @@
 import numpy
-import layer
+from not_using_keras import layer
 
 
 class InputLayer(layer.Layer):

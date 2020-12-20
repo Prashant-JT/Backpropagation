@@ -4,10 +4,12 @@ import numpy
 
 class Layer(object):
     """Class Layer:
+
     Attributes:
         number_neurons.-
         number_inputs_each_neuron.-
         w.-
+
     Methods:
          __init__(p_number_neurons, p_number_inputs, p_random_state)
          init_w()
