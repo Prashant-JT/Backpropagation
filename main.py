@@ -1,5 +1,5 @@
-from using_keras.with_keras import compile_model as compile_keras, evaluate_model as evaluate_keras
-from not_using_keras.without_keras import compile_model as compile_no_keras
+from BPNN_Model2.with_keras import compile_model as compile_keras, evaluate_model as evaluate_keras
+from BPNN_Model1.without_keras import compile_model as compile_no_keras
 
 
 # Run model with Keras

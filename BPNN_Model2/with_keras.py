@@ -14,7 +14,7 @@ def compile_model():
 
     # Create model
     model = Sequential()
-    model.add(Dense(512, input_dim=20, activation='relu'))
+    model.add(Dense(512, input_dim=23, activation='relu'))
     model.add(Dense(256, activation='relu'))
     model.add(Dense(128, activation='relu'))
     model.add(Dense(64, activation='relu'))
