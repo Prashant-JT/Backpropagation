@@ -39,13 +39,13 @@ class colors:
         lightgrey = '\033[47m'
 
 
-def get_dict():
+def get_semaphore():
     return {
-        range(0, 21): (colors.fg.green, 'VERY GOOD'),
-        range(21, 41): (colors.fg.lightgreen, 'GOOD'),
-        range(41, 51): (colors.fg.yellow, 'OK'),
-        range(51, 76): (colors.fg.orange, 'BAD'),
-        range(76, 101): (colors.fg.red, 'VERY BAD')
+        range(0, 21): ('|', colors.fg.green, 'O', '|O|O|O|O|', 'VERY GOOD'),
+        range(21, 41): ('|O|', colors.fg.lightgreen, 'O', '|O|O|O|', 'GOOD'),
+        range(41, 51): ('|O|O|', colors.fg.yellow, 'O', '|O|O|', 'OK'),
+        range(51, 76): ('|O|O|O|', colors.fg.orange, 'O', '|O|', 'BAD'),
+        range(76, 101): ('|O|O|O|O|', colors.fg.red, 'O', '|', 'VERY BAD')
     }
 
 
@@ -54,8 +54,10 @@ def print_signs(val_new, val_test):
         print("Original: ", val_test, " ---- Predicted: ", val_new, f"{colors.bg.red}",
               " -------------------- Not match ---------", f"{colors.end}")
     else:
-        result = get_dict()
+        result = get_semaphore()
         for key, value in result.items():
             if np.ceil(val_new * 100) in key:
-                print("Original: ", val_test, " ---- Predicted: ", val_new, " -------------------- ",
-                      f"{value[0]} {value[1]} {colors.end}", "---------")
+                print("Original: ", val_test, " ---- Predicted: ", val_new, "---------",
+                      f"{colors.fg.lightgrey}{value[0]}{colors.end}{value[1]}{value[2]}{colors.end}"  # Semaphore color
+                      f"{colors.fg.lightgrey}{value[3]}{colors.end}", "-------",  # Semaphore color
+                      f"{value[1]}{value[4]}{colors.end}", "---------")  # Text color
