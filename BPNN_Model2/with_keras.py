@@ -14,17 +14,17 @@ def compile_model():
 
     # Create model
     model = Sequential()
-    model.add(Dense(512, input_dim=23, activation='relu'))
-    model.add(Dense(256, activation='relu'))
-    model.add(Dense(128, activation='relu'))
-    model.add(Dense(64, activation='relu'))
-    model.add(Dense(32, activation='relu'))
-    model.add(Dense(16, activation='relu'))
+    model.add(Dense(512, input_dim=23, activation='sigmoid'))
+    model.add(Dense(256, activation='sigmoid'))
+    model.add(Dense(128, activation='sigmoid'))
+    model.add(Dense(64, activation='sigmoid'))
+    model.add(Dense(32, activation='sigmoid'))
+    model.add(Dense(16, activation='sigmoid'))
     model.add(Dense(1, activation="sigmoid"))
 
     # Compile and fit model
     model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
-    history = model.fit(X, Y, epochs=50, validation_split=0.2, shuffle=True, batch_size=40)
+    history = model.fit(X, Y, epochs=50, validation_split=0.2, shuffle=True, batch_size=20)
 
     model.save(name_model)
 
