@@ -32,7 +32,7 @@ class Layer(object):
         return numpy.matmul(p_X, self.w[1:, :]) + self.w[0, :]
 
     def _activation(self, p_net_input):
-        return p_net_input
+        return 1. / (1. + numpy.exp(-p_net_input))
 
     def _quantization(self, p_activation):
         return numpy.where(p_activation >= 0.0, 1, -1)
