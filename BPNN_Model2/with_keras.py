@@ -20,7 +20,7 @@ def compile_model():
     model.add(Dense(64, activation='relu'))
     model.add(Dense(32, activation='relu'))
     model.add(Dense(16, activation='relu'))
-    model.add(Dense(1, activation="sigmoid"))
+    model.add(Dense(1, activation='sigmoid'))
 
     # Compile and fit model
     model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
