@@ -10,5 +10,9 @@ class OutputLayer(layer.Layer):
                                       size=(1 + self.number_inputs_each_neuron, self.number_neurons))
         return self
 
+    def activation(self, z):
+        signal = numpy.clip(z, -500, 500)
+        return 1.0 / (1.0 + numpy.exp(-signal))
+
     def predict(self, p_X):
-        return self._quantization(self._activation(self._net_input(p_X)))
+        return self.activation(self._net_input(p_X))

@@ -10,5 +10,9 @@ class HiddenLayer(layer.Layer):
                                       size=(1 + self.number_inputs_each_neuron, self.number_neurons))
         return self
 
+    def activation(self, z):
+        signal = numpy.clip(z, 0, 500)
+        return numpy.maximum(0, signal)
+
     def predict(self, p_X):
-        return self._activation(self._net_input(p_X))
+        return self.activation(self._net_input(p_X))
